@@ -97,6 +97,7 @@ export function FeedOverlay() {
       {/* Header bar — visual symmetry with bottom bar */}
       <div className="border-b border-white/10 flex-shrink-0 flex items-center justify-center" style={{ height: '22px' }}>
         <a href="/cc" className="w-5 h-5 rounded-full block" style={{ background: '#999', opacity: 0.4, marginTop: '5px' }} />
+        <a href="/me" className="w-5 h-5 rounded-full block" style={{ background: '#5af', opacity: 0.4, marginTop: '5px', marginLeft: '8px' }} />
         <a href="https://movealong-production.up.railway.app" target="_blank" rel="noopener noreferrer" className="block" style={{ opacity: 0.4, marginLeft: '8px', fontSize: '20px', color: '#999', lineHeight: '20px', marginTop: '5px' }}>→</a>
       </div>
 
