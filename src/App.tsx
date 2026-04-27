@@ -17,22 +17,28 @@ function Homepage() {
   const hover = (text: string) => ({ onMouseEnter: () => setHoverText(text), onMouseLeave: () => setHoverText(null) })
 
   return (
-    <div className="grid h-screen w-screen bg-white" style={{ gridTemplateColumns: 'repeat(9, 1fr)', gridTemplateRows: 'repeat(9, 1fr)' }}>
-      {/* Blog — spans positions 1, 4, and 7 (col 1-3, row 1-9) */}
-      <div className="relative overflow-hidden bg-black" style={{ gridColumn: '1 / 4', gridRow: '1 / 10' }} {...hover('My blog')}>
+    <div className="grid h-screen w-screen bg-white" style={{ gridTemplateColumns: 'repeat(3, 1fr)', gridTemplateRows: 'repeat(3, 1fr)' }}>
+      {/* Blog — position 1 (r1c1) */}
+      <div className="relative overflow-hidden bg-black" {...hover('My blog')}>
         <FeedOverlay />
       </div>
-      {/* Text Me — position 2 */}
-      <a href="sms:+12068608292" className="overflow-hidden" style={{ gridColumn: '4 / 7', gridRow: '1 / 4' }} {...hover('Text me here')}>
+      {/* Text Me — position 2 (r1c2) */}
+      <a href="sms:+12068608292" className="overflow-hidden" {...hover('Text me here')}>
         <img src={bubbleImg} alt="Text Me" className="w-full h-full object-cover" />
       </a>
-      {/* Blackmoor — position 3 */}
-      <a href="https://blackmoor-production.up.railway.app" target="_blank" rel="noopener noreferrer" className="overflow-hidden" style={{ gridColumn: '7 / 10', gridRow: '1 / 4' }} {...hover('Shadow of the Wolf')}>
+      {/* Blackmoor — position 3 (r1c3) */}
+      <a href="https://blackmoor-production.up.railway.app" target="_blank" rel="noopener noreferrer" className="overflow-hidden" {...hover('Shadow of the Wolf')}>
         <img src={andImg} alt="Blackmoor" className="w-full h-full object-cover" />
       </a>
 
+      {/* Coming soon — position 4 (r2c1) */}
+      <div className="flex items-center justify-center bg-white">
+        <span style={{ ...kFont, fontSize: 'clamp(28px, 5vw, 72px)', lineHeight: 1.1 }}>
+          coming soon
+        </span>
+      </div>
       {/* K — position 5 (center) */}
-      <div className="relative flex items-center justify-center" style={{ gridColumn: '4 / 7', gridRow: '4 / 7' }}>
+      <div className="relative flex items-center justify-center">
         <span style={{ ...kFont, fontSize: 'clamp(120px, 18vw, 280px)', lineHeight: 1, opacity: hoverText ? 0 : 1, transition: 'opacity 0.3s' }}>
           K
         </span>
@@ -42,17 +48,23 @@ function Homepage() {
           </span>
         )}
       </div>
-      {/* JustEdit — position 6 */}
-      <a href="/justedit/justedit.html" target="_blank" rel="noopener noreferrer" className="overflow-hidden" style={{ gridColumn: '7 / 10', gridRow: '4 / 7' }} {...hover('Write me here')}>
+      {/* JustEdit — position 6 (r2c3) */}
+      <a href="/justedit/justedit.html" target="_blank" rel="noopener noreferrer" className="overflow-hidden" {...hover('Write me here')}>
         <img src={penImg} alt="JustEdit" className="w-full h-full object-cover" />
       </a>
 
-      {/* Fast French — position 8 */}
-      <a href="/fast-french/" target="_blank" rel="noopener noreferrer" className="overflow-hidden" style={{ gridColumn: '4 / 7', gridRow: '7 / 10' }} {...hover('Fast French,\nmy French learning game')}>
+      {/* Coming soon — position 7 (r3c1) */}
+      <div className="flex items-center justify-center bg-white">
+        <span style={{ ...kFont, fontSize: 'clamp(28px, 5vw, 72px)', lineHeight: 1.1 }}>
+          coming soon
+        </span>
+      </div>
+      {/* Fast French — position 8 (r3c2) */}
+      <a href="/fast-french/" target="_blank" rel="noopener noreferrer" className="overflow-hidden" {...hover('Fast French,\nmy French learning game')}>
         <img src={pastryImg} alt="Fast French" className="w-full h-full object-cover" />
       </a>
-      {/* Wind — position 9 */}
-      <a href="https://meticulous-eagerness-production-411f.up.railway.app" target="_blank" rel="noopener noreferrer" className="overflow-hidden" style={{ gridColumn: '7 / 10', gridRow: '7 / 10' }} {...hover('Windy,\nmy real time wind project')}>
+      {/* Wind — position 9 (r3c3) */}
+      <a href="https://meticulous-eagerness-production-411f.up.railway.app" target="_blank" rel="noopener noreferrer" className="overflow-hidden" {...hover('Windy,\nmy real time wind project')}>
         <img src={windImg} alt="Wind" className="w-full h-full object-cover" />
       </a>
     </div>
