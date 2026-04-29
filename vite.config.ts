@@ -5,7 +5,7 @@ import fs from 'fs'
 import path from 'path'
 
 // Serve static sub-apps from public/ without being caught by the SPA fallback
-const staticSubApps = ['basher', 'fast-french', 'justedit', 'houdini', 'cc', 'wendy']
+const staticSubApps = ['basher', 'fast-french', 'justedit', 'houdini', 'cc']
 
 function staticSubAppMiddleware() {
   return {
