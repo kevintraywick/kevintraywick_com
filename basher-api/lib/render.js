@@ -8,9 +8,9 @@ const esc = (s) =>
 const PAGES = [
   { id: 'start',       file: 'index.html',        label: 'start' },
   { id: 'frameworks',  file: 'frameworks.html',   label: 'frameworks' },
+  { id: 'pg-thinking', file: 'pg-thinking.html',  label: 'pg thinking' },
   { id: 'pragmatic',   file: 'pragmatic.html',    label: 'pragmatic' },
   { id: 'financials',  file: 'financials.html',   label: 'financials' },
-  { id: 'pg-thinking', file: 'pg-thinking.html',  label: 'pg thinking' },
   { id: 'summary',     file: 'summary.html',      label: 'summary' },
   { id: 'missing',     file: 'missing.html',      label: 'missing' },
   { id: 'plan',        file: 'plan.html',         label: 'plan',  disabled: true },
@@ -157,6 +157,11 @@ function renderStart(r, ctx) {
     ${gradesGrid}
     <div style="font-size:11px;color:#aaa;margin-top:10px;">BP · DB · SQ · CC · BG · SA</div>
   </a>
+  <a href="pg-thinking.html" style="${cardStyle}">
+    <div style="font-size:10px;font-weight:500;color:#999;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:10px;">PG Thinking</div>
+    <div style="font-size:18px;font-weight:700;color:#1a1a1a;margin-bottom:8px;">${pgPass}<span style="font-size:12px;font-weight:400;color:#999;"> / 20</span></div>
+    <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:4px;justify-items:center;">${pgGrid}</div>
+  </a>
   <a href="pragmatic.html" style="${cardStyle}">
     <div style="font-size:10px;font-weight:500;color:#999;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:10px;">Pragmatic</div>
     <div style="font-size:24px;font-weight:700;color:#1a1a1a;">${pragmaticPass}<span style="font-size:14px;font-weight:400;color:#999;"> / 11</span></div>
@@ -166,11 +171,6 @@ function renderStart(r, ctx) {
     <div style="font-size:10px;font-weight:500;color:#999;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:8px;">Financials</div>
     <div style="font-size:13px;font-weight:600;color:#1a1a1a;margin-bottom:6px;">${finPresent}<span style="font-weight:400;color:#999;"> / 12</span></div>
     <ul style="list-style:none;text-align:left;">${finList}</ul>
-  </a>
-  <a href="pg-thinking.html" style="${cardStyle}">
-    <div style="font-size:10px;font-weight:500;color:#999;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:10px;">PG Thinking</div>
-    <div style="font-size:18px;font-weight:700;color:#1a1a1a;margin-bottom:8px;">${pgPass}<span style="font-size:12px;font-weight:400;color:#999;"> / 20</span></div>
-    <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:4px;justify-items:center;">${pgGrid}</div>
   </a>
 </div>`;
 
