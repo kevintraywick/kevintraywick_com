@@ -1,6 +1,6 @@
 <!--
   basher — Business Plan Evaluation Tool
-  Planned Stack: Node.js, React, Tailwind CSS, PostgreSQL, Railway
+  Backend: basher-api (Railway). Reports live on volume for 10 days.
 -->
 <!DOCTYPE html>
 <html lang="en">
@@ -15,23 +15,40 @@
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
     body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; background: #fafafa; color: #1a1a1a; min-height: 100vh; display: flex; flex-direction: column; align-items: center; -webkit-font-smoothing: antialiased; }
     .container { width: 100%; max-width: 480px; padding: 0 24px; display: flex; flex-direction: column; align-items: center; }
-    .title { margin-top: 80px; font-size: 11px; font-weight: 400; letter-spacing: 0.12em; text-transform: lowercase; color: #999; }
+    .title { margin-top: 80px; font-size: 11px; font-weight: 400; letter-spacing: 0.12em; text-transform: lowercase; color: #767676; }
     .dropzone-wrapper { margin-top: 32px; display: flex; flex-direction: column; align-items: center; gap: 16px; }
     .dropzone { width: 96px; height: 96px; border-radius: 50%; border: 1.5px dashed #ccc; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.25s ease; background: transparent; }
-    .dropzone:hover { border-color: #999; background: rgba(0,0,0,0.015); }
+    .dropzone:hover { border-color: #767676; background: rgba(0,0,0,0.015); }
     .dropzone.drag-over { border-color: #1a1a1a; border-style: solid; background: rgba(0,0,0,0.03); transform: scale(1.06); }
     .dropzone.has-file { border-color: #2a9d6a; border-style: solid; }
+    .dropzone.busy { pointer-events: none; opacity: 0.7; }
     .dropzone-icon { font-size: 24px; color: #bbb; transition: color 0.25s ease; line-height: 1; user-select: none; }
     .dropzone:hover .dropzone-icon { color: #888; }
     .dropzone.drag-over .dropzone-icon { color: #1a1a1a; }
     .dropzone.has-file .dropzone-icon { color: #2a9d6a; }
+    .spinner { width: 28px; height: 28px; border: 2px solid #eee; border-top-color: #1a1a1a; border-radius: 50%; animation: spin 0.8s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
     .dropzone-label { font-size: 11px; color: #aaa; font-weight: 400; }
-    .file-info { margin-top: 8px; font-size: 12px; color: #666; text-align: center; min-height: 18px; transition: opacity 0.2s ease; }
+    .file-info { margin-top: 8px; font-size: 12px; color: #666; text-align: center; min-height: 18px; transition: opacity 0.2s ease; max-width: 320px; }
     .file-info.visible { opacity: 1; } .file-info:not(.visible) { opacity: 0; }
+    .file-info.error { color: #d94a4a; }
     .file-input { display: none; }
+    .evaluate-btn { margin-top: 20px; padding: 9px 24px; background: #1a1a1a; color: #fff; border: none; border-radius: 6px; font-family: inherit; font-size: 13px; font-weight: 500; letter-spacing: -0.01em; cursor: pointer; transition: background 0.2s ease, opacity 0.2s ease, transform 0.15s ease; opacity: 0; pointer-events: none; transform: translateY(4px); }
+    .evaluate-btn.visible { opacity: 1; pointer-events: auto; transform: translateY(0); }
+    .evaluate-btn:hover { background: #333; }
+    .evaluate-btn:disabled { background: #999; cursor: progress; }
+    .retention-note { margin-top: 8px; font-size: 10px; color: #aaa; text-align: center; max-width: 320px; line-height: 1.5; }
     nav { margin-top: 64px; display: flex; flex-direction: column; align-items: center; gap: 12px; }
     nav a { font-size: 13px; font-weight: 400; color: #888; text-decoration: none; transition: color 0.2s ease; padding: 4px 0; }
     nav a:hover { color: #1a1a1a; }
+    .reports-section { margin-top: 48px; width: 100%; }
+    .reports-label { font-size: 10px; font-weight: 500; color: #bbb; letter-spacing: 0.1em; text-transform: uppercase; text-align: center; margin-bottom: 14px; }
+    .reports-list { display: flex; flex-direction: column; gap: 1px; }
+    .report-link { display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: #fff; border: 1px solid #eee; border-radius: 6px; text-decoration: none; color: #1a1a1a; font-size: 13px; transition: border-color 0.2s, box-shadow 0.2s; }
+    .report-link:hover { border-color: #ddd; box-shadow: 0 1px 6px rgba(0,0,0,0.05); }
+    .report-link span { font-size: 11px; color: #bbb; }
+    .report-link.recent span { color: #d4a843; }
+    .recent-label { font-size: 9px; font-weight: 500; color: #ccc; letter-spacing: 0.1em; text-transform: uppercase; text-align: center; margin: 18px 0 8px; }
     .footer { margin-top: auto; padding: 48px 0 32px; font-size: 10px; color: #ccc; letter-spacing: 0.04em; }
   </style>
 </head>
@@ -42,27 +59,132 @@
       <div class="dropzone" id="dropzone" tabindex="0" role="button" aria-label="Drop a business plan here">
         <span class="dropzone-icon" id="dropzone-icon">+</span>
       </div>
-      <div class="dropzone-label">drop a business plan</div>
+      <div class="dropzone-label" id="dropzone-label">drop a business plan</div>
       <div class="file-info" id="file-info"></div>
     </div>
+    <button class="evaluate-btn" id="evaluate-btn" aria-label="Evaluate business plan">evaluate →</button>
+    <div class="retention-note" id="retention-note" style="display:none;">Evaluations live on the server for 10 days. You'll get a download link to keep a copy.</div>
     <input type="file" class="file-input" id="file-input" accept=".pdf,.docx,.doc,.txt,.rtf">
     <nav>
       <a href="frameworks.html">frameworks</a>
     </nav>
+    <div class="reports-section">
+      <div class="reports-label">evaluations</div>
+      <div class="reports-list" id="static-reports">
+        <a class="report-link" href="airbed-and-breakfast/index.html">AirBed &amp; Breakfast <span>2008</span></a>
+        <a class="report-link" href="vibeai/index.html">VibeAI <span>2024</span></a>
+        <a class="report-link" href="burro/index.html">Burro <span>2019</span></a>
+        <a class="report-link" href="greenfield-robotics/index.html">Greenfield Robotics <span>2019</span></a>
+        <a class="report-link" href="greenleaf-bioplastics/index.html">Greenleaf Bioplastics <span>2024</span></a>
+      </div>
+      <div id="recent-section" style="display:none;">
+        <div class="recent-label">recent · expires in</div>
+        <div class="reports-list" id="recent-reports"></div>
+      </div>
+    </div>
   </div>
-  <div class="footer">node · react · tailwind · postgres · railway</div>
+  <div class="footer">node · react · tailwind · railway</div>
   <script>
-    const dropzone=document.getElementById('dropzone'),dropzoneIcon=document.getElementById('dropzone-icon'),fileInput=document.getElementById('file-input'),fileInfo=document.getElementById('file-info');
-    const ACCEPTED=['application/pdf','application/msword','application/vnd.openxmlformats-officedocument.wordprocessingml.document','text/plain','application/rtf'];
-    function handleFile(f){if(!f)return;const ext=f.name.split('.').pop().toLowerCase();if(!ACCEPTED.includes(f.type)&&!['pdf','docx','doc','txt','rtf'].includes(ext)){fileInfo.textContent='pdf, docx, or txt only';fileInfo.classList.add('visible');setTimeout(()=>fileInfo.classList.remove('visible'),2600);return;}dropzone.classList.add('has-file');dropzoneIcon.textContent='✓';fileInfo.textContent=f.name;fileInfo.classList.add('visible');}
-    dropzone.addEventListener('click',()=>{if(dropzone.classList.contains('has-file')){dropzone.classList.remove('has-file');dropzoneIcon.textContent='+';fileInfo.classList.remove('visible');return;}fileInput.click();});
-    dropzone.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();dropzone.click();}});
-    fileInput.addEventListener('change',e=>{if(e.target.files.length>0)handleFile(e.target.files[0]);});
-    dropzone.addEventListener('dragenter',e=>{e.preventDefault();dropzone.classList.add('drag-over');});
-    dropzone.addEventListener('dragover',e=>{e.preventDefault();dropzone.classList.add('drag-over');});
-    dropzone.addEventListener('dragleave',e=>{e.preventDefault();dropzone.classList.remove('drag-over');});
-    dropzone.addEventListener('drop',e=>{e.preventDefault();dropzone.classList.remove('drag-over');if(e.dataTransfer.files.length>0)handleFile(e.dataTransfer.files[0]);});
-    document.addEventListener('dragover',e=>e.preventDefault());document.addEventListener('drop',e=>e.preventDefault());
+    const API_URL = (window.BASHER_API_URL || 'https://basher-api-production.up.railway.app').replace(/\/$/, '');
+    const dropzone = document.getElementById('dropzone');
+    const dropzoneIcon = document.getElementById('dropzone-icon');
+    const dropzoneLabel = document.getElementById('dropzone-label');
+    const fileInput = document.getElementById('file-input');
+    const fileInfo = document.getElementById('file-info');
+    const evaluateBtn = document.getElementById('evaluate-btn');
+    const retentionNote = document.getElementById('retention-note');
+    const ACCEPTED = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'text/plain', 'application/rtf'];
+    let currentFile = null;
+
+    function setInfo(text, isError) {
+      fileInfo.textContent = text;
+      fileInfo.classList.toggle('visible', !!text);
+      fileInfo.classList.toggle('error', !!isError);
+    }
+
+    function resetDropzone() {
+      currentFile = null;
+      dropzone.classList.remove('has-file', 'busy');
+      dropzoneIcon.textContent = '+';
+      dropzoneIcon.outerHTML = '<span class="dropzone-icon" id="dropzone-icon">+</span>';
+      setInfo('', false);
+      evaluateBtn.classList.remove('visible');
+      evaluateBtn.disabled = false;
+      evaluateBtn.textContent = 'evaluate →';
+      retentionNote.style.display = 'none';
+    }
+
+    function handleFile(f) {
+      if (!f) return;
+      const ext = f.name.split('.').pop().toLowerCase();
+      if (!ACCEPTED.includes(f.type) && !['pdf', 'docx', 'doc', 'txt', 'rtf'].includes(ext)) {
+        setInfo('pdf, docx, or txt only', true);
+        setTimeout(() => setInfo('', false), 2600);
+        return;
+      }
+      currentFile = f;
+      dropzone.classList.add('has-file');
+      document.getElementById('dropzone-icon').textContent = '✓';
+      setInfo(f.name, false);
+      evaluateBtn.classList.add('visible');
+      retentionNote.style.display = 'block';
+    }
+
+    async function evaluate() {
+      if (!currentFile) return;
+      evaluateBtn.disabled = true;
+      evaluateBtn.textContent = 'evaluating…';
+      dropzone.classList.add('busy');
+      document.getElementById('dropzone-icon').outerHTML = '<div class="spinner" id="dropzone-icon"></div>';
+      setInfo('uploading and analyzing — this can take a minute…', false);
+
+      const fd = new FormData();
+      fd.append('file', currentFile);
+      try {
+        const res = await fetch(API_URL + '/evaluate', { method: 'POST', body: fd });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || ('HTTP ' + res.status));
+        setInfo('done. opening report…', false);
+        setTimeout(() => { window.location.href = data.url; }, 600);
+      } catch (err) {
+        console.error(err);
+        setInfo('failed: ' + err.message, true);
+        evaluateBtn.disabled = false;
+        evaluateBtn.textContent = 'try again →';
+        dropzone.classList.remove('busy');
+        document.getElementById('dropzone-icon').outerHTML = '<span class="dropzone-icon" id="dropzone-icon">!</span>';
+      }
+    }
+
+    evaluateBtn.addEventListener('click', evaluate);
+    dropzone.addEventListener('click', () => {
+      if (dropzone.classList.contains('busy')) return;
+      if (currentFile) { resetDropzone(); return; }
+      fileInput.click();
+    });
+    dropzone.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); dropzone.click(); } });
+    fileInput.addEventListener('change', (e) => { if (e.target.files.length > 0) handleFile(e.target.files[0]); });
+    dropzone.addEventListener('dragenter', (e) => { e.preventDefault(); dropzone.classList.add('drag-over'); });
+    dropzone.addEventListener('dragover', (e) => { e.preventDefault(); dropzone.classList.add('drag-over'); });
+    dropzone.addEventListener('dragleave', (e) => { e.preventDefault(); dropzone.classList.remove('drag-over'); });
+    dropzone.addEventListener('drop', (e) => { e.preventDefault(); dropzone.classList.remove('drag-over'); if (e.dataTransfer.files.length > 0) handleFile(e.dataTransfer.files[0]); });
+    document.addEventListener('dragover', (e) => e.preventDefault());
+    document.addEventListener('drop', (e) => e.preventDefault());
+
+    function relTime(ms) {
+      const days = Math.max(0, Math.ceil((ms - Date.now()) / (24 * 60 * 60 * 1000)));
+      if (days === 0) return 'today';
+      if (days === 1) return '1 day';
+      return days + ' days';
+    }
+    fetch(API_URL + '/reports').then((r) => r.ok ? r.json() : null).then((data) => {
+      if (!data || !data.reports || data.reports.length === 0) return;
+      const list = document.getElementById('recent-reports');
+      list.innerHTML = data.reports.slice(0, 10).map((r) =>
+        '<a class="report-link recent" href="' + r.url + '"><span style="color:#1a1a1a;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + (r.company_name || r.slug) + '</span><span>' + relTime(r.expires_at) + '</span></a>'
+      ).join('');
+      document.getElementById('recent-section').style.display = 'block';
+    }).catch(() => {});
   </script>
 </body>
 </html>

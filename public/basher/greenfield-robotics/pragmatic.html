@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>basher — Greenfield Robotics · pragmatic</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}body{font-family:'Inter',sans-serif;background:#fafafa;color:#1a1a1a;min-height:100vh;-webkit-font-smoothing:antialiased}.header{padding:48px 0 12px;text-align:center}.header a{font-size:11px;font-weight:400;letter-spacing:.12em;text-transform:lowercase;color:#767676;text-decoration:none}.header a:hover{color:#1a1a1a}.nav{text-align:center;margin-top:8px}.nav a{font-size:13px;color:#888;text-decoration:none;font-weight:500}.nav a:hover{color:#1a1a1a}.page-title{margin-top:8px;font-size:13px;color:#767676;text-align:center;font-weight:400}.score-summary{text-align:center;margin-top:24px;font-size:32px;font-weight:700;color:#1a1a1a}.score-summary span{font-size:18px;font-weight:400;color:#767676}.questions{max-width:640px;margin:32px auto 0;padding:0 24px 80px}.q-item{background:#fff;border:1px solid #eee;border-radius:8px;padding:20px 24px;margin-bottom:12px;position:relative;transition:all .2s}.q-item:hover{border-color:#ddd}.q-header{display:flex;align-items:center;gap:12px;margin-bottom:8px}.q-number{font-size:10px;font-weight:600;color:#ccc;letter-spacing:.04em;min-width:24px}.q-title{font-size:13px;font-weight:600;color:#1a1a1a;flex:1}.q-result{font-size:10px;font-weight:700;letter-spacing:.06em;padding:3px 10px;border-radius:3px;text-transform:uppercase}.q-result.pass{background:#e8f5ee;color:#2a9d6a}.q-result.fail{background:#fde8e8;color:#d94a4a}.q-result.incomplete{background:#fef3e2;color:#d4a843}.q-justification{font-size:12.5px;line-height:1.6;color:#666;font-weight:400;margin-left:36px}.footer{max-width:640px;margin:0 auto;padding:0 24px 32px;font-size:10px;color:#ccc;text-align:center}
+  </style>
+</head>
+<body>
+  <div class="header"><a href="../index.html">basher</a></div>
+  <div class="nav"><a href="index.html">Greenfield Robotics</a></div>
+  <div class="page-title">pragmatic review</div>
+  <div class="score-summary">3 <span>/ 11</span></div>
+  <div class="questions">
+    <div class="q-item">
+      <div class="q-header"><span class="q-number">P1</span><span class="q-title">Path to first paying customer</span><span class="q-result pass">Pass</span></div>
+      <div class="q-justification">Already answered — 20+ robots deployed across dozens of Kansas farms with paying service contracts. Pilot phase is well past.</div>
+    </div>
+    <div class="q-item">
+      <div class="q-header"><span class="q-number">P2</span><span class="q-title">Rate limiter to first $10M in revenue</span><span class="q-result incomplete">Incomplete</span></div>
+      <div class="q-justification">Not explicitly named in public materials. The implied bottleneck is robot manufacturing capacity and field operations staffing, but no per-robot economics or fleet-size-to-revenue model is shown. At current revenue ($196K/year), reaching $10M requires roughly a 50x increase — the path is not articulated.</div>
+    </div>
+    <div class="q-item">
+      <div class="q-header"><span class="q-number">P3</span><span class="q-title">Operating cash required (3/6/12 months)</span><span class="q-result incomplete">Incomplete</span></div>
+      <div class="q-justification">Burn rate of approximately $150K/month is inferred from press coverage, not stated by the company. No breakdown of salaries, robot maintenance, field operations, or G&A. Monthly granularity is absent.</div>
+    </div>
+    <div class="q-item">
+      <div class="q-header"><span class="q-number">P4</span><span class="q-title">Capital expenditure required (3/6/12 months)</span><span class="q-result incomplete">Incomplete</span></div>
+      <div class="q-justification">Hardware company with significant per-robot manufacturing cost, but no CapEx schedule or unit build cost disclosed. This is a critical gap for a fleet-scaling model.</div>
+    </div>
+    <div class="q-item">
+      <div class="q-header"><span class="q-number">P5</span><span class="q-title">Survival runway without new funding</span><span class="q-result fail">Fail</span></div>
+      <div class="q-justification">At ~$150K/month burn against $16K/month in revenue, the company has essentially no self-sustaining runway. Survival is entirely dependent on continuous external capital raises. Far below the 36-month benchmark.</div>
+    </div>
+    <div class="q-item">
+      <div class="q-header"><span class="q-number">P6</span><span class="q-title">First critical hire</span><span class="q-result incomplete">Incomplete</span></div>
+      <div class="q-justification">Not addressed in available materials. Given the financial gap between burn and revenue, a CFO or VP Operations with hardware-as-a-service scaling experience is likely the blocking hire — but no pipeline or role is identified.</div>
+    </div>
+    <div class="q-item">
+      <div class="q-header"><span class="q-number">P7</span><span class="q-title">Unit economics today</span><span class="q-result fail">Fail</span></div>
+      <div class="q-justification">Gross margin of ~7% on $196K revenue is deeply problematic. The cost of deploying and operating each robot consumes nearly all the service fee. No CAC or per-robot LTV is disclosed. Unit economics are not viable at current scale.</div>
+    </div>
+    <div class="q-item">
+      <div class="q-header"><span class="q-number">P8</span><span class="q-title">Single point of failure</span><span class="q-result incomplete">Incomplete</span></div>
+      <div class="q-justification">Not explicitly named, though several obvious candidates exist: dependence on Chipotle/MKC as anchor investors, robot manufacturing supply chain, and the founder's personal role as operator. None are addressed with mitigation plans.</div>
+    </div>
+    <div class="q-item">
+      <div class="q-header"><span class="q-number">P9</span><span class="q-title">Regulatory or legal gate</span><span class="q-result pass">Pass</span></div>
+      <div class="q-justification">Autonomous mechanical robots operating in open agricultural fields carry minimal regulatory burden compared to chemical alternatives. No FDA, EPA, or OSHA gates have been identified as blocking factors — a genuine advantage over herbicide-based competitors.</div>
+    </div>
+    <div class="q-item">
+      <div class="q-header"><span class="q-number">P10</span><span class="q-title">Revenue concentration risk</span><span class="q-result incomplete">Incomplete</span></div>
+      <div class="q-justification">With 20 robots across "a few dozen farmers" in Kansas, revenue concentration among a handful of customers is likely high, but not quantified. If top 2-3 farm contracts were lost, impact on the already-thin revenue base could be severe.</div>
+    </div>
+    <div class="q-item">
+      <div class="q-header"><span class="q-number">P11</span><span class="q-title">Founder proof of execution</span><span class="q-result pass">Pass</span></div>
+      <div class="q-justification">Clint Brauer left a high-paying Los Angeles tech career, returned to Kansas, taught himself agriculture, built working robots from scratch over seven years, deployed a commercial fleet, and attracted Chipotle and a major ag cooperative as investors — all without traditional VC backing. That is a genuine and specific track record of execution.</div>
+    </div>
+  </div>
+  <div class="footer">evaluated by basher · 2026-03-26</div>
+</body>
+</html>
