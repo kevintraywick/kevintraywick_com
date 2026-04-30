@@ -107,7 +107,7 @@ function renderIndex(r, ctx) {
   <a href="frameworks.html" style="background:#fff;border:1px solid #eee;border-radius:8px;padding:18px 22px;text-decoration:none;color:inherit;min-width:180px;text-align:center;flex:1;max-width:220px;">
     <div style="font-size:10px;font-weight:500;color:#999;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:10px;">Frameworks</div>
     <div>${grades}</div>
-    <div style="font-size:11px;color:#aaa;margin-top:8px;">BP · DB · SQ · CC</div>
+    <div style="font-size:11px;color:#aaa;margin-top:8px;">BP · DB · SQ · CC · BG · SA</div>
   </a>
   <a href="pragmatic.html" style="background:#fff;border:1px solid #eee;border-radius:8px;padding:18px 22px;text-decoration:none;color:inherit;min-width:140px;text-align:center;flex:1;max-width:180px;">
     <div style="font-size:10px;font-weight:500;color:#999;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:10px;">Pragmatic</div>
@@ -180,6 +180,18 @@ function renderFrameworks(r, ctx) {
         `<li style="font-size:12px;color:#666;padding:4px 0;display:flex;align-items:flex-start;gap:8px;"><span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.05em;text-transform:uppercase;padding:2px 6px;border-radius:3px;background:${e.status === 'strong' ? '#e8f5ee' : e.status === 'adequate' ? '#fef3e2' : '#fde8e8'};color:${e.status === 'strong' ? '#2a9d6a' : e.status === 'adequate' ? '#d4a843' : '#d94a4a'};margin-top:1px;">${esc(e.status || '?')}</span><span style="flex:1;"><strong style="color:#1a1a1a;">${esc(e.name)}</strong> — ${esc(e.note || '')}</span></li>`,
     )
     .join('');
+  const bgFactors = (fwk.bg?.factors || [])
+    .map(
+      (f) =>
+        `<li style="font-size:12px;color:#666;padding:4px 0;display:flex;justify-content:space-between;gap:10px;"><span><strong style="color:#1a1a1a;">${esc(f.name)}</strong>${f.weight && f.weight > 1 ? ` <span style="color:#999;font-size:10px;">×${f.weight}</span>` : ''} — ${esc(f.note || '')}</span><span style="font-weight:600;color:#1a1a1a;flex-shrink:0;">${f.score}/5</span></li>`,
+    )
+    .join('');
+  const saPrinciples = (fwk.sa?.principles || [])
+    .map(
+      (p) =>
+        `<li style="font-size:12px;color:#666;padding:4px 0;display:flex;align-items:flex-start;gap:8px;"><span style="display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:50%;background:${p.passed ? '#2a9d6a' : '#d94a4a'};color:#fff;font-size:10px;font-weight:700;margin-top:1px;flex-shrink:0;">${p.passed ? '✓' : '×'}</span><span style="flex:1;"><strong style="color:#1a1a1a;">${esc(p.id || '')} ${esc(p.name)}</strong>${p.note ? ' — ' + esc(p.note) : ''}</span></li>`,
+    )
+    .join('');
 
   return `${shellOpen({ company: r.company_name, title: 'frameworks', slug: ctx.slug, expiresAt: ctx.expiresAt, downloadUrl: ctx.downloadUrl })}
 <div class="header"><a href="${esc(ctx.homeUrl)}">basher</a></div>
@@ -191,6 +203,8 @@ function renderFrameworks(r, ctx) {
   ${card('Dave Berkus Method', 'db', dbCats ? `<ul style="list-style:none;margin-top:12px;border-top:1px solid #f0f0f0;padding-top:12px;">${dbCats}</ul>` : '')}
   ${card('Sequoia Elements', 'sq', sqEls ? `<ul style="list-style:none;margin-top:12px;border-top:1px solid #f0f0f0;padding-top:12px;">${sqEls}</ul>` : '')}
   ${card('Christensen JTBD / Four-Box', 'cc', ccEls ? `<ul style="list-style:none;margin-top:12px;border-top:1px solid #f0f0f0;padding-top:12px;">${ccEls}</ul>` : '')}
+  ${card('Bill Gross — Five Factors (timing-weighted)', 'bg', bgFactors ? `<ul style="list-style:none;margin-top:12px;border-top:1px solid #f0f0f0;padding-top:12px;">${bgFactors}</ul>` : '')}
+  ${card('Sam Altman — 11 Principles', 'sa', saPrinciples ? `<ul style="list-style:none;margin-top:12px;border-top:1px solid #f0f0f0;padding-top:12px;">${saPrinciples}</ul>` : '')}
 </div>
 
 ${shellClose(ctx.createdAt)}`;
