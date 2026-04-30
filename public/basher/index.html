@@ -48,8 +48,6 @@
     .report-link:hover { border-color: #ddd; box-shadow: 0 1px 6px rgba(0,0,0,0.05); }
     .report-link span { font-size: 11px; color: #bbb; }
     .report-link.recent span { color: #d4a843; }
-    .recent-label { font-size: 9px; font-weight: 500; color: #ccc; letter-spacing: 0.1em; text-transform: uppercase; text-align: center; margin: 18px 0 8px; }
-    .footer { margin-top: auto; padding: 48px 0 32px; font-size: 10px; color: #ccc; letter-spacing: 0.04em; }
   </style>
 </head>
 <body>
@@ -69,21 +67,12 @@
       <a href="frameworks.html">frameworks</a>
     </nav>
     <div class="reports-section">
-      <div class="reports-label">evaluations</div>
-      <div class="reports-list" id="static-reports">
-        <a class="report-link" href="airbed-and-breakfast/index.html">AirBed &amp; Breakfast <span>2008</span></a>
-        <a class="report-link" href="vibeai/index.html">VibeAI <span>2024</span></a>
-        <a class="report-link" href="burro/index.html">Burro <span>2019</span></a>
-        <a class="report-link" href="greenfield-robotics/index.html">Greenfield Robotics <span>2019</span></a>
-        <a class="report-link" href="greenleaf-bioplastics/index.html">Greenleaf Bioplastics <span>2024</span></a>
-      </div>
       <div id="recent-section" style="display:none;">
-        <div class="recent-label">recent · expires in</div>
+        <div class="reports-label">evaluations</div>
         <div class="reports-list" id="recent-reports"></div>
       </div>
     </div>
   </div>
-  <div class="footer">node · react · tailwind · railway</div>
   <script>
     const API_URL = (window.BASHER_API_URL || 'https://basher-production.up.railway.app').replace(/\/$/, '');
     const dropzone = document.getElementById('dropzone');
