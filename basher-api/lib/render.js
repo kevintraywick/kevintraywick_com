@@ -129,9 +129,10 @@ function renderStart(r, ctx) {
   const grades = ['bp', 'db', 'sq', 'cc', 'bg', 'sa']
     .map((k) => {
       const g = fwk[k]?.grade || '?';
-      return `<span title="${esc(k.toUpperCase())}" style="display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:${gradeColor(g)};color:#fff;font-size:10px;font-weight:700;margin:0 2px;">${esc(g)}</span>`;
+      return `<span title="${esc(k.toUpperCase())}" style="display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:${gradeColor(g)};color:#fff;font-size:11px;font-weight:700;">${esc(g)}</span>`;
     })
     .join('');
+  const gradesGrid = `<div style="display:grid;grid-template-columns:repeat(3, 28px);gap:6px;justify-content:center;">${grades}</div>`;
 
   const finList = r.financials
     .map(
@@ -152,9 +153,9 @@ function renderStart(r, ctx) {
   const body = `
 <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;">
   <a href="frameworks.html" style="${cardStyle}">
-    <div style="font-size:10px;font-weight:500;color:#999;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:10px;">Frameworks</div>
-    <div>${grades}</div>
-    <div style="font-size:11px;color:#aaa;margin-top:8px;">BP · DB · SQ · CC · BG · SA</div>
+    <div style="font-size:10px;font-weight:500;color:#999;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:12px;">Frameworks</div>
+    ${gradesGrid}
+    <div style="font-size:11px;color:#aaa;margin-top:10px;">BP · DB · SQ · CC · BG · SA</div>
   </a>
   <a href="pragmatic.html" style="${cardStyle}">
     <div style="font-size:10px;font-weight:500;color:#999;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:10px;">Pragmatic</div>
