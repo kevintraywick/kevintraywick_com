@@ -37,7 +37,7 @@ body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; back
 .side-link.active .dot { background: #1a1a1a; border-color: #1a1a1a; }
 .side-link.disabled { color: #ccc; pointer-events: none; }
 .side-link.disabled .dot { border-style: dashed; border-color: #ddd; }
-.dot { width: 8px; height: 8px; border-radius: 50%; border: 1.5px solid #ccc; background: transparent; flex-shrink: 0; transition: all 0.15s ease; }
+.dot { width: 25px; height: 25px; border-radius: 50%; border: 1.5px solid #ccc; background: transparent; flex-shrink: 0; transition: all 0.15s ease; }
 .side-link:hover .dot { border-color: #888; }
 .content { min-width: 0; }
 .page-title { font-size: 11px; font-weight: 500; color: #999; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 18px; }
@@ -49,7 +49,7 @@ body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; back
   .layout { grid-template-columns: 1fr; gap: 16px; padding: 16px; }
   .sidebar { position: static; flex-direction: row; flex-wrap: wrap; gap: 4px; padding-bottom: 8px; border-bottom: 1px solid #eee; }
   .side-link { padding: 6px 8px; font-size: 12px; }
-  .side-link .dot { width: 6px; height: 6px; }
+  .side-link .dot { width: 18px; height: 18px; }
 }
 `;
 
