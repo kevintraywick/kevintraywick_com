@@ -50,7 +50,6 @@ function validateAndNormalize(r) {
   if (!r.slug) r.slug = slugify(r.company_name);
   r.slug = slugify(r.slug);
   for (const arr of [
-    ['pragmatic', 11],
     ['financials', 12],
     ['pg_thinking', 20],
   ]) {
@@ -61,6 +60,12 @@ function validateAndNormalize(r) {
   }
   for (const k of ['bp', 'db', 'sq', 'cc', 'bg', 'sa']) {
     if (!r.frameworks?.[k]?.grade) throw new Error(`missing frameworks.${k}.grade`);
+  }
+  if (!r.pragmatic?.eleven_questions?.questions || r.pragmatic.eleven_questions.questions.length !== 11) {
+    throw new Error('pragmatic.eleven_questions.questions must be an array of length 11');
+  }
+  for (const k of ['eleven_questions', 'steve_blank', 'eric_ries']) {
+    if (!r.pragmatic?.[k]?.grade) throw new Error(`missing pragmatic.${k}.grade`);
   }
   return r;
 }

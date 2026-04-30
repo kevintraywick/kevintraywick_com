@@ -122,17 +122,27 @@ const resultColor = (r) => ({ pass: '#2a9d6a', incomplete: '#d4a843', fail: '#d9
 
 function renderStart(r, ctx) {
   const fwk = r.frameworks;
-  const pragmaticPass = r.pragmatic.filter((p) => p.result === 'pass').length;
+  const prag = r.pragmatic || {};
   const finPresent = r.financials.filter((f) => f.status === 'present').length;
   const pgPass = r.pg_thinking.filter((p) => p.result === 'pass').length;
 
-  const grades = ['bp', 'db', 'sq', 'cc', 'bg', 'sa']
+  const fwkGrades = ['bp', 'db', 'sq', 'cc', 'bg', 'sa']
     .map((k) => {
       const g = fwk[k]?.grade || '?';
       return `<span title="${esc(k.toUpperCase())}" style="display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:${gradeColor(g)};color:#fff;font-size:11px;font-weight:700;">${esc(g)}</span>`;
     })
     .join('');
-  const gradesGrid = `<div style="display:grid;grid-template-columns:repeat(3, 28px);gap:6px;justify-content:center;">${grades}</div>`;
+  const fwkGrid = `<div style="display:grid;grid-template-columns:repeat(3, 28px);gap:6px;justify-content:center;">${fwkGrades}</div>`;
+
+  const pragGrades = [
+    ['eleven_questions', '11Q'],
+    ['steve_blank', 'SB'],
+    ['eric_ries', 'ER'],
+  ].map(([k, label]) => {
+    const g = prag[k]?.grade || '?';
+    return `<span title="${esc(label)}" style="display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:${gradeColor(g)};color:#fff;font-size:11px;font-weight:700;">${esc(g)}</span>`;
+  }).join('');
+  const pragGrid = `<div style="display:flex;gap:6px;justify-content:center;">${pragGrades}</div>`;
 
   const finList = r.financials
     .map(
@@ -154,7 +164,7 @@ function renderStart(r, ctx) {
 <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;">
   <a href="frameworks.html" style="${cardStyle}">
     <div style="font-size:10px;font-weight:500;color:#999;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:12px;">Frameworks</div>
-    ${gradesGrid}
+    ${fwkGrid}
     <div style="font-size:11px;color:#aaa;margin-top:10px;">BP · DB · SQ · CC · BG · SA</div>
   </a>
   <a href="pg-thinking.html" style="${cardStyle}">
@@ -163,9 +173,9 @@ function renderStart(r, ctx) {
     <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:4px;justify-items:center;">${pgGrid}</div>
   </a>
   <a href="pragmatic.html" style="${cardStyle}">
-    <div style="font-size:10px;font-weight:500;color:#999;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:10px;">Pragmatic</div>
-    <div style="font-size:24px;font-weight:700;color:#1a1a1a;">${pragmaticPass}<span style="font-size:14px;font-weight:400;color:#999;"> / 11</span></div>
-    <div style="font-size:11px;color:#aaa;margin-top:8px;">threshold questions</div>
+    <div style="font-size:10px;font-weight:500;color:#999;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:12px;">Pragmatic</div>
+    ${pragGrid}
+    <div style="font-size:11px;color:#aaa;margin-top:10px;">11Q · SB · ER</div>
   </a>
   <a href="financials.html" style="${cardStyle}">
     <div style="font-size:10px;font-weight:500;color:#999;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:8px;">Financials</div>
@@ -262,9 +272,64 @@ ${rows}`;
   return shell(currentId, label, body, ctx, r);
 }
 
-const renderPragmatic   = (r, ctx) => renderListPage(r.pragmatic,   (i) => i.result, resultColor, ctx, r, 'pragmatic',   'pragmatic',    11);
 const renderFinancials  = (r, ctx) => renderListPage(r.financials,  (i) => i.status, statusColor, ctx, r, 'financials',  'financials',   12);
 const renderPgThinking  = (r, ctx) => renderListPage(r.pg_thinking, (i) => i.result, resultColor, ctx, r, 'pg-thinking', 'pg thinking',  20);
+
+function renderPragmatic(r, ctx) {
+  const prag = r.pragmatic || {};
+  const eq = prag.eleven_questions || {};
+  const sb = prag.steve_blank || {};
+  const er = prag.eric_ries || {};
+
+  const card = (title, label, data, body) => {
+    const g = data.grade || '?';
+    return `<div style="background:#fff;border:1px solid #eee;border-radius:8px;padding:22px;">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">
+        <span style="display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:50%;background:${gradeColor(g)};color:#fff;font-size:14px;font-weight:700;flex-shrink:0;">${esc(g)}</span>
+        <div style="min-width:0;">
+          <div style="font-size:10px;font-weight:600;color:#999;letter-spacing:0.08em;text-transform:uppercase;">${esc(label)}</div>
+          <div style="font-size:13px;font-weight:600;color:#1a1a1a;">${esc(title)}</div>
+        </div>
+      </div>
+      <div style="font-size:12.5px;line-height:1.6;color:#555;">${esc(data.rationale || '')}</div>
+      ${body || ''}
+    </div>`;
+  };
+
+  const eqQuestions = (eq.questions || [])
+    .map((q) => {
+      const c = resultColor(q.result);
+      return `<li style="font-size:12px;color:#666;padding:6px 0;border-bottom:1px solid #f4f4f4;display:flex;align-items:flex-start;gap:8px;">
+        <span style="font-size:9px;font-weight:700;color:#bbb;min-width:24px;flex-shrink:0;margin-top:2px;">${esc(q.id)}</span>
+        <span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.05em;text-transform:uppercase;padding:2px 6px;border-radius:3px;background:${c}22;color:${c};margin-top:1px;flex-shrink:0;">${esc(q.result || '?')}</span>
+        <span style="flex:1;"><strong style="color:#1a1a1a;">${esc(q.title)}</strong>${q.justification ? ' — ' + esc(q.justification) : ''}</span>
+      </li>`;
+    })
+    .join('');
+  const eqBody = eqQuestions
+    ? `<div style="font-size:12px;color:#999;margin-top:10px;font-weight:500;letter-spacing:0.04em;">${eq.passes ?? 0} / 11 pass</div><ul style="list-style:none;margin-top:8px;border-top:1px solid #f0f0f0;padding-top:6px;">${eqQuestions}</ul>`
+    : '';
+
+  const dimList = (dims) =>
+    (dims || [])
+      .map((d) => `<li style="font-size:12px;color:#666;padding:5px 0;display:flex;justify-content:space-between;gap:10px;border-bottom:1px solid #f4f4f4;">
+        <span style="flex:1;"><strong style="color:#1a1a1a;">${esc(d.name)}</strong> <span style="color:#999;font-size:10px;">(${d.weight_pct}%)</span>${d.note ? ' — ' + esc(d.note) : ''}</span>
+        <span style="font-weight:600;color:#1a1a1a;flex-shrink:0;">${d.score_pct}%</span>
+      </li>`)
+      .join('');
+
+  const sbBody = sb.dimensions ? `<div style="font-size:12px;color:#999;margin-top:10px;font-weight:500;letter-spacing:0.04em;">${sb.score ?? '?'}% weighted</div><ul style="list-style:none;margin-top:8px;border-top:1px solid #f0f0f0;padding-top:6px;">${dimList(sb.dimensions)}</ul>` : '';
+  const erBody = er.dimensions ? `<div style="font-size:12px;color:#999;margin-top:10px;font-weight:500;letter-spacing:0.04em;">${er.score ?? '?'}% weighted</div><ul style="list-style:none;margin-top:8px;border-top:1px solid #f0f0f0;padding-top:6px;">${dimList(er.dimensions)}</ul>` : '';
+
+  const body = `
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;">
+  ${card('Eleven Questions', '11Q', eq, eqBody)}
+  ${card('Steve Blank Scorecard', 'SB', sb, sbBody)}
+  ${card('Eric Ries Scorecard', 'ER', er, erBody)}
+</div>`;
+
+  return shell('pragmatic', 'pragmatic', body, ctx, r);
+}
 
 // ─────────────────────────────────────────────────────────────────────
 // summary (executive)

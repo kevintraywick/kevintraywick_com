@@ -36,7 +36,11 @@ SA11 Long-term thinking (decade-out decisions)
 
 11/11=A, 9-10=B, 7-8=C, 5-6=D, ≤4=F.
 
-# Stage 2: Pragmatic (11 threshold questions, pass/fail/incomplete)
+# Stage 2: Pragmatic (3 sub-cards, each graded A-F)
+
+## 11Q — Eleven Operational Threshold Questions
+
+Pass/fail/incomplete each, then grade by pass count: 9-11=A, 7-8=B, 5-6=C, 3-4=D, ≤2=F.
 
 P1 Path to first paying customer (signed LOI, named customer, real introduction)
 P2 Rate limiter to first $10M revenue (named bottleneck + mitigation)
@@ -49,6 +53,34 @@ P8 Single point of failure (named + mitigation)
 P9 Regulatory or legal gate (timeline + cost to clear)
 P10 Revenue concentration risk (>30% from single source = vulnerability)
 P11 Founder proof of execution (prior exit, prototype built, partnership closed, deep domain experience)
+
+## SB — Steve Blank Customer Development Scorecard
+
+Weighted scorecard (Bill-Payne style). Score each dimension as percentage relative to an "average" startup (100%=average). Weighted average: 130%+=A, 115-129=B, 100-114=C, 80-99=D, <80=F. **Cap at C** if there is no evidence of founder-led customer interviews.
+
+| Dimension | Weight |
+|---|---|
+| Founder-led customer interviews ("get out of the building") | 25% |
+| Hypotheses explicit & falsifiable | 15% |
+| Evidence of pivots from customer feedback | 15% |
+| Repeatable sales motion (or named path to one) | 15% |
+| Phase clarity (Discovery / Validation / Creation / Building) | 10% |
+| Real demand metrics over vanity metrics | 10% |
+| Get-out-of-the-building proof (specific customer quotes, names) | 10% |
+
+## ER — Eric Ries Lean Startup Scorecard
+
+Same weighted form and grading as SB. **Cap at C** if no MVP defined.
+
+| Dimension | Weight |
+|---|---|
+| MVP defined & shipped | 20% |
+| Validated learning from MVP iterations | 20% |
+| Build-Measure-Learn cycle velocity | 15% |
+| Innovation accounting (cohort metrics, not totals) | 15% |
+| Pivot vs persevere decisions made explicitly | 10% |
+| Engine of growth identified (sticky / viral / paid) | 10% |
+| Genchi genbutsu (founder personally observes product use) | 10% |
 
 # Stage 3: Financials (12 items, present/partial/absent)
 
@@ -96,9 +128,26 @@ Respond ONLY with a single JSON object matching this exact schema. No prose, no 
     "bg": { "grade": "A"|"B"|"C"|"D"|"F", "weighted_score": number (0-30), "rationale": string (must address timing explicitly), "factors": [{"name": string, "score": number (1-5), "weight": number, "note": string}] },
     "sa": { "grade": "A"|"B"|"C"|"D"|"F", "passes": number (0-11), "rationale": string, "principles": [{"id": "SA1".."SA11", "name": string, "passed": boolean, "note": string}] }
   },
-  "pragmatic": [
-    { "id": "P1".."P11", "title": string, "result": "pass"|"fail"|"incomplete", "justification": string }
-  ] (length 11, ordered),
+  "pragmatic": {
+    "eleven_questions": {
+      "grade": "A"|"B"|"C"|"D"|"F",
+      "passes": number (0-11),
+      "rationale": string,
+      "questions": [{ "id": "P1".."P11", "title": string, "result": "pass"|"fail"|"incomplete", "justification": string }] (length 11, ordered)
+    },
+    "steve_blank": {
+      "grade": "A"|"B"|"C"|"D"|"F",
+      "score": number (weighted % avg),
+      "rationale": string,
+      "dimensions": [{ "name": string, "weight_pct": number, "score_pct": number, "note": string }] (7 entries)
+    },
+    "eric_ries": {
+      "grade": "A"|"B"|"C"|"D"|"F",
+      "score": number (weighted % avg),
+      "rationale": string,
+      "dimensions": [{ "name": string, "weight_pct": number, "score_pct": number, "note": string }] (7 entries)
+    }
+  },
   "financials": [
     { "id": "F1".."F12", "title": string, "tier": 1|2|3, "status": "present"|"partial"|"absent", "justification": string }
   ] (length 12, ordered),
