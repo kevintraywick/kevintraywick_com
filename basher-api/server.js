@@ -22,7 +22,6 @@ import { startSweeper } from './lib/cleanup.js';
 const PORT = Number(process.env.PORT || 3000);
 const PUBLIC_BASE_URL = process.env.PUBLIC_BASE_URL || `http://localhost:${PORT}`;
 const HOME_URL = process.env.BASHER_HOME_URL || 'https://kevintraywick.com/basher/';
-const POST_SECRET = process.env.BASHER_POST_SECRET || '';
 
 const app = express();
 app.set('strict routing', true);
@@ -37,14 +36,6 @@ const upload = multer({
   storage: multer.memoryStorage(),
   limits: { fileSize: 25 * 1024 * 1024 },
 });
-
-function requireSecret(req, res, next) {
-  if (!POST_SECRET) return next();
-  const auth = req.headers.authorization || '';
-  const token = auth.startsWith('Bearer ') ? auth.slice(7) : '';
-  if (token !== POST_SECRET) return res.status(401).json({ error: 'unauthorized' });
-  next();
-}
 
 function buildCtx(slug, createdAt) {
   return {
@@ -77,7 +68,7 @@ app.get('/reports', async (_req, res) => {
   }
 });
 
-app.post('/evaluate', requireSecret, upload.single('file'), async (req, res) => {
+app.post('/evaluate', upload.single('file'), async (req, res) => {
   if (!req.file) return res.status(400).json({ error: 'no file uploaded (field: file)' });
   try {
     const text = await extractText({
