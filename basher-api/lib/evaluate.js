@@ -59,7 +59,9 @@ function validateAndNormalize(r) {
       throw new Error(`${key} must be an array of length ${expected}, got ${r[key]?.length}`);
     }
   }
-  if (!r.frameworks?.bp?.grade) throw new Error('missing frameworks.bp.grade');
+  for (const k of ['bp', 'db', 'sq', 'cc', 'bg', 'sa']) {
+    if (!r.frameworks?.[k]?.grade) throw new Error(`missing frameworks.${k}.grade`);
+  }
   return r;
 }
 

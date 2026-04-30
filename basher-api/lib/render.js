@@ -70,10 +70,10 @@ function renderIndex(r, ctx) {
   const finPresent = r.financials.filter((f) => f.status === 'present').length;
   const pgPass = r.pg_thinking.filter((p) => p.result === 'pass').length;
 
-  const grades = ['bp', 'db', 'sq', 'cc']
+  const grades = ['bp', 'db', 'sq', 'cc', 'bg', 'sa']
     .map((k) => {
       const g = fwk[k]?.grade || '?';
-      return `<span style="display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:${gradeColor(g)};color:#fff;font-size:11px;font-weight:700;margin:0 3px;">${esc(g)}</span>`;
+      return `<span title="${esc(k.toUpperCase())}" style="display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:${gradeColor(g)};color:#fff;font-size:10px;font-weight:700;margin:0 2px;">${esc(g)}</span>`;
     })
     .join('');
 
