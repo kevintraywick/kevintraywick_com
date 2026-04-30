@@ -5,6 +5,18 @@ const esc = (s) =>
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;');
 
+const PAGES = [
+  { id: 'start',       file: 'index.html',        label: 'start' },
+  { id: 'frameworks',  file: 'frameworks.html',   label: 'frameworks' },
+  { id: 'pragmatic',   file: 'pragmatic.html',    label: 'pragmatic' },
+  { id: 'financials',  file: 'financials.html',   label: 'financials' },
+  { id: 'pg-thinking', file: 'pg-thinking.html',  label: 'pg thinking' },
+  { id: 'summary',     file: 'summary.html',      label: 'summary' },
+  { id: 'missing',     file: 'missing.html',      label: 'missing' },
+  { id: 'plan',        file: 'plan.html',         label: 'plan',  disabled: true },
+  { id: 'pitch',       file: 'pitch.html',        label: 'pitch', disabled: true },
+];
+
 const styleBase = `
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; background: #fafafa; color: #1a1a1a; min-height: 100vh; -webkit-font-smoothing: antialiased; }
@@ -12,33 +24,53 @@ body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; back
 .banner strong { font-weight: 600; color: #6b4f15; }
 .banner a { color: #6b4f15; text-decoration: underline; font-weight: 500; }
 .banner a:hover { color: #1a1a1a; }
-.header { padding: 32px 0 12px; text-align: center; }
-.header a { font-size: 11px; font-weight: 400; letter-spacing: 0.12em; text-transform: lowercase; color: #999; text-decoration: none; transition: color 0.2s ease; }
-.header a:hover { color: #1a1a1a; }
-.nav { text-align: center; margin-top: 8px; }
-.nav a { font-size: 13px; color: #888; text-decoration: none; font-weight: 500; transition: color 0.2s; }
-.nav a:hover { color: #1a1a1a; }
-.company-name { margin-top: 12px; font-size: 20px; font-weight: 600; color: #1a1a1a; text-align: center; }
-.company-tagline { margin-top: 6px; font-size: 13px; color: #888; text-align: center; font-weight: 400; }
-.page-title { margin-top: 8px; font-size: 13px; color: #999; text-align: center; font-weight: 400; letter-spacing: 0.02em; }
-.section { max-width: 760px; margin: 0 auto; padding: 32px 24px 0; }
-.section-title { font-size: 11px; font-weight: 500; color: #999; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 16px; }
-.summary { font-size: 14px; line-height: 1.8; color: #444; font-weight: 400; }
-.footer { max-width: 760px; margin: 0 auto; padding: 48px 24px 32px; font-size: 10px; color: #ccc; letter-spacing: 0.04em; text-align: center; }
+.head { padding: 32px 24px 16px; text-align: center; border-bottom: 1px solid #f0f0f0; }
+.head .logo { font-size: 11px; font-weight: 400; letter-spacing: 0.12em; text-transform: lowercase; color: #999; text-decoration: none; transition: color 0.2s ease; }
+.head .logo:hover { color: #1a1a1a; }
+.head .company { margin-top: 10px; font-size: 18px; font-weight: 600; color: #1a1a1a; }
+.head .tagline { margin-top: 4px; font-size: 12px; color: #888; font-weight: 400; }
+.layout { display: grid; grid-template-columns: 180px 1fr; max-width: 960px; margin: 0 auto; padding: 32px 24px 80px; gap: 32px; }
+.sidebar { display: flex; flex-direction: column; gap: 2px; position: sticky; top: 24px; align-self: start; }
+.side-link { display: flex; align-items: center; gap: 10px; padding: 7px 10px; border-radius: 6px; text-decoration: none; color: #888; font-size: 13px; font-weight: 400; transition: background 0.15s ease, color 0.15s ease; }
+.side-link:hover { background: #f3f3f3; color: #1a1a1a; }
+.side-link.active { color: #1a1a1a; font-weight: 500; }
+.side-link.active .dot { background: #1a1a1a; border-color: #1a1a1a; }
+.side-link.disabled { color: #ccc; pointer-events: none; }
+.side-link.disabled .dot { border-style: dashed; border-color: #ddd; }
+.dot { width: 8px; height: 8px; border-radius: 50%; border: 1.5px solid #ccc; background: transparent; flex-shrink: 0; transition: all 0.15s ease; }
+.side-link:hover .dot { border-color: #888; }
+.content { min-width: 0; }
+.page-title { font-size: 11px; font-weight: 500; color: #999; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 18px; }
+.summary-text { font-size: 14px; line-height: 1.8; color: #444; font-weight: 400; }
+.placeholder { font-size: 13px; line-height: 1.7; color: #888; font-style: italic; padding: 24px; background: #fff; border: 1px dashed #e0e0e0; border-radius: 8px; }
+.footer { font-size: 10px; color: #ccc; letter-spacing: 0.04em; text-align: center; padding: 32px 0 16px; }
+
+@media (max-width: 700px) {
+  .layout { grid-template-columns: 1fr; gap: 16px; padding: 16px; }
+  .sidebar { position: static; flex-direction: row; flex-wrap: wrap; gap: 4px; padding-bottom: 8px; border-bottom: 1px solid #eee; }
+  .side-link { padding: 6px 8px; font-size: 12px; }
+  .side-link .dot { width: 6px; height: 6px; }
+}
 `;
 
-function shellOpen({ company, title, expiresAt, downloadUrl }) {
-  const expiresStr = new Date(expiresAt).toLocaleDateString(undefined, {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  });
+function renderSidebar(currentId) {
+  return `<nav class="sidebar">${PAGES.map((p) => {
+    const cls = ['side-link'];
+    if (p.id === currentId) cls.push('active');
+    if (p.disabled) cls.push('disabled');
+    return `<a href="${esc(p.file)}" class="${cls.join(' ')}"${p.disabled ? ' aria-disabled="true" tabindex="-1"' : ''}><span class="dot"></span><span>${esc(p.label)}</span></a>`;
+  }).join('')}</nav>`;
+}
+
+function shellOpen({ company, tagline, currentId, expiresAt, downloadUrl, pageTitle }) {
+  const expiresStr = new Date(expiresAt).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
+  const titleSuffix = pageTitle ? ' · ' + pageTitle : '';
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>basher — ${esc(company)}${title ? ' · ' + esc(title) : ''}</title>
+<title>basher — ${esc(company)}${esc(titleSuffix)}</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -48,23 +80,47 @@ function shellOpen({ company, title, expiresAt, downloadUrl }) {
 <div class="banner">
   <span>This evaluation expires <strong>${esc(expiresStr)}</strong> (10 days from creation).</span>
   <a href="${esc(downloadUrl)}" download>Download a copy</a>
-</div>`;
+</div>
+<div class="head">
+  <a class="logo" href="${'__HOME__'}">basher</a>
+  <div class="company">${esc(company)}</div>
+  ${tagline ? `<div class="tagline">${esc(tagline)}</div>` : ''}
+</div>
+<div class="layout">
+  ${renderSidebar(currentId)}
+  <main class="content">
+    <div class="page-title">${esc(pageTitle || '')}</div>`;
 }
 
 function shellClose(generatedAt) {
-  const dateStr = new Date(generatedAt).toLocaleDateString(undefined, {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-  });
-  return `<div class="footer">evaluated by basher · ${esc(dateStr)}</div></body></html>`;
+  const dateStr = new Date(generatedAt).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+  return `  </main>
+</div>
+<div class="footer">evaluated by basher · ${esc(dateStr)}</div>
+</body>
+</html>`;
+}
+
+function shell(currentId, pageTitle, body, ctx, r) {
+  return shellOpen({
+    company: r.company_name,
+    tagline: r.one_line_description,
+    currentId,
+    expiresAt: ctx.expiresAt,
+    downloadUrl: ctx.downloadUrl,
+    pageTitle,
+  }).replace('__HOME__', esc(ctx.homeUrl)) + body + shellClose(ctx.createdAt);
 }
 
 const gradeColor = (g) => ({ A: '#2a9d6a', B: '#4a90d9', C: '#d4a843', D: '#d97a4a', F: '#d94a4a' }[g] || '#999');
 const statusColor = (s) => ({ present: '#2a9d6a', partial: '#d4a843', absent: '#d94a4a' }[s] || '#999');
 const resultColor = (r) => ({ pass: '#2a9d6a', incomplete: '#d4a843', fail: '#d94a4a' }[r] || '#999');
 
-function renderIndex(r, ctx) {
+// ─────────────────────────────────────────────────────────────────────
+// start (formerly index): summary cards
+// ─────────────────────────────────────────────────────────────────────
+
+function renderStart(r, ctx) {
   const fwk = r.frameworks;
   const pragmaticPass = r.pragmatic.filter((p) => p.result === 'pass').length;
   const finPresent = r.financials.filter((f) => f.status === 'present').length;
@@ -91,197 +147,169 @@ function renderIndex(r, ctx) {
     })
     .join('');
 
-  const missing = (r.missing_information || [])
-    .map(
-      (m) =>
-        `<li style="font-size:13px;line-height:1.7;color:#555;padding:8px 0;border-bottom:1px solid #f0f0f0;"><span style="font-size:10px;font-weight:600;color:#999;letter-spacing:0.04em;margin-right:8px;">${esc(m.tag)}</span>${esc(m.text)}</li>`,
-    )
-    .join('') || '<li style="font-size:13px;color:#888;padding:8px 0;">None flagged.</li>';
+  const cardStyle = 'background:#fff;border:1px solid #eee;border-radius:8px;padding:18px 22px;text-decoration:none;color:inherit;text-align:center;display:block;transition:border-color 0.2s ease, box-shadow 0.2s ease;';
 
-  return `${shellOpen({ company: r.company_name, title: '', slug: ctx.slug, expiresAt: ctx.expiresAt, downloadUrl: ctx.downloadUrl })}
-<div class="header"><a href="${esc(ctx.homeUrl)}">basher</a></div>
-<div class="company-name">${esc(r.company_name)}</div>
-<div class="company-tagline">${esc(r.one_line_description || '')}</div>
-
-<div style="max-width:760px;margin:32px auto 0;padding:0 24px;display:flex;flex-wrap:wrap;align-items:stretch;justify-content:center;gap:12px;">
-  <a href="frameworks.html" style="background:#fff;border:1px solid #eee;border-radius:8px;padding:18px 22px;text-decoration:none;color:inherit;min-width:180px;text-align:center;flex:1;max-width:220px;">
+  const body = `
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;">
+  <a href="frameworks.html" style="${cardStyle}">
     <div style="font-size:10px;font-weight:500;color:#999;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:10px;">Frameworks</div>
     <div>${grades}</div>
     <div style="font-size:11px;color:#aaa;margin-top:8px;">BP · DB · SQ · CC · BG · SA</div>
   </a>
-  <a href="pragmatic.html" style="background:#fff;border:1px solid #eee;border-radius:8px;padding:18px 22px;text-decoration:none;color:inherit;min-width:140px;text-align:center;flex:1;max-width:180px;">
+  <a href="pragmatic.html" style="${cardStyle}">
     <div style="font-size:10px;font-weight:500;color:#999;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:10px;">Pragmatic</div>
     <div style="font-size:24px;font-weight:700;color:#1a1a1a;">${pragmaticPass}<span style="font-size:14px;font-weight:400;color:#999;"> / 11</span></div>
     <div style="font-size:11px;color:#aaa;margin-top:8px;">threshold questions</div>
   </a>
-  <a href="financials.html" style="background:#fff;border:1px solid #eee;border-radius:8px;padding:18px 22px;text-decoration:none;color:inherit;min-width:200px;text-align:center;flex:1;max-width:240px;">
+  <a href="financials.html" style="${cardStyle}">
     <div style="font-size:10px;font-weight:500;color:#999;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:8px;">Financials</div>
     <div style="font-size:13px;font-weight:600;color:#1a1a1a;margin-bottom:6px;">${finPresent}<span style="font-weight:400;color:#999;"> / 12</span></div>
     <ul style="list-style:none;text-align:left;">${finList}</ul>
   </a>
-  <a href="pg-thinking.html" style="background:#fff;border:1px solid #eee;border-radius:8px;padding:18px 22px;text-decoration:none;color:inherit;min-width:160px;text-align:center;flex:1;max-width:200px;">
+  <a href="pg-thinking.html" style="${cardStyle}">
     <div style="font-size:10px;font-weight:500;color:#999;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:10px;">PG Thinking</div>
     <div style="font-size:18px;font-weight:700;color:#1a1a1a;margin-bottom:8px;">${pgPass}<span style="font-size:12px;font-weight:400;color:#999;"> / 20</span></div>
     <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:4px;justify-items:center;">${pgGrid}</div>
   </a>
-</div>
+</div>`;
 
-<div class="section">
-  <div class="section-title">Executive Summary</div>
-  <p class="summary">${esc(r.executive_summary || '')}</p>
-</div>
-
-<div class="section">
-  <div class="section-title">Missing Information</div>
-  <ul style="list-style:none;">${missing}</ul>
-</div>
-
-${shellClose(ctx.createdAt)}`;
+  return shell('start', 'start', body, ctx, r);
 }
+
+// ─────────────────────────────────────────────────────────────────────
+// frameworks
+// ─────────────────────────────────────────────────────────────────────
 
 function renderFrameworks(r, ctx) {
   const fwk = r.frameworks;
   const card = (title, key, body) => {
     const g = fwk[key]?.grade || '?';
-    return `<div style="background:#fff;border:1px solid #eee;border-radius:8px;padding:24px;">
-      <div style="display:flex;align-items:center;gap:14px;margin-bottom:12px;">
-        <span style="display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;border-radius:50%;background:${gradeColor(g)};color:#fff;font-size:16px;font-weight:700;">${esc(g)}</span>
-        <div>
-          <div style="font-size:11px;font-weight:600;color:#999;letter-spacing:0.08em;text-transform:uppercase;">${esc(key.toUpperCase())}</div>
-          <div style="font-size:14px;font-weight:600;color:#1a1a1a;">${esc(title)}</div>
+    return `<div style="background:#fff;border:1px solid #eee;border-radius:8px;padding:22px;">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">
+        <span style="display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:50%;background:${gradeColor(g)};color:#fff;font-size:14px;font-weight:700;flex-shrink:0;">${esc(g)}</span>
+        <div style="min-width:0;">
+          <div style="font-size:10px;font-weight:600;color:#999;letter-spacing:0.08em;text-transform:uppercase;">${esc(key.toUpperCase())}</div>
+          <div style="font-size:13px;font-weight:600;color:#1a1a1a;">${esc(title)}</div>
         </div>
       </div>
-      <div style="font-size:13px;line-height:1.7;color:#555;">${esc(fwk[key]?.rationale || '')}</div>
+      <div style="font-size:12.5px;line-height:1.6;color:#555;">${esc(fwk[key]?.rationale || '')}</div>
       ${body || ''}
     </div>`;
   };
 
   const bpDims = (fwk.bp?.dimensions || [])
-    .map(
-      (d) =>
-        `<li style="font-size:12px;color:#666;padding:4px 0;display:flex;justify-content:space-between;"><span>${esc(d.name)} (${d.weight_pct}%)</span><span style="font-weight:600;color:#1a1a1a;">${d.score_pct}%</span></li>`,
-    )
+    .map((d) => `<li style="font-size:12px;color:#666;padding:4px 0;display:flex;justify-content:space-between;"><span>${esc(d.name)} (${d.weight_pct}%)</span><span style="font-weight:600;color:#1a1a1a;">${d.score_pct}%</span></li>`)
     .join('');
   const dbCats = (fwk.db?.categories || [])
-    .map(
-      (c) =>
-        `<li style="font-size:12px;color:#666;padding:4px 0;display:flex;justify-content:space-between;"><span>${esc(c.name)}</span><span style="font-weight:600;color:#1a1a1a;">$${(c.value || 0).toLocaleString()}</span></li>`,
-    )
+    .map((c) => `<li style="font-size:12px;color:#666;padding:4px 0;display:flex;justify-content:space-between;"><span>${esc(c.name)}</span><span style="font-weight:600;color:#1a1a1a;">$${(c.value || 0).toLocaleString()}</span></li>`)
     .join('');
   const sqEls = (fwk.sq?.elements || [])
-    .map(
-      (e) =>
-        `<li style="font-size:12px;color:#666;padding:4px 0;display:flex;align-items:center;gap:8px;"><span style="display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:50%;background:${e.passed ? '#2a9d6a' : '#d94a4a'};color:#fff;font-size:10px;font-weight:700;">${e.passed ? '✓' : '×'}</span><span style="flex:1;"><strong style="color:#1a1a1a;">${esc(e.name)}</strong> — ${esc(e.note || '')}</span></li>`,
-    )
+    .map((e) => `<li style="font-size:12px;color:#666;padding:4px 0;display:flex;align-items:center;gap:8px;"><span style="display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:50%;background:${e.passed ? '#2a9d6a' : '#d94a4a'};color:#fff;font-size:10px;font-weight:700;flex-shrink:0;">${e.passed ? '✓' : '×'}</span><span style="flex:1;"><strong style="color:#1a1a1a;">${esc(e.name)}</strong> — ${esc(e.note || '')}</span></li>`)
     .join('');
   const ccEls = (fwk.cc?.elements || [])
-    .map(
-      (e) =>
-        `<li style="font-size:12px;color:#666;padding:4px 0;display:flex;align-items:flex-start;gap:8px;"><span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.05em;text-transform:uppercase;padding:2px 6px;border-radius:3px;background:${e.status === 'strong' ? '#e8f5ee' : e.status === 'adequate' ? '#fef3e2' : '#fde8e8'};color:${e.status === 'strong' ? '#2a9d6a' : e.status === 'adequate' ? '#d4a843' : '#d94a4a'};margin-top:1px;">${esc(e.status || '?')}</span><span style="flex:1;"><strong style="color:#1a1a1a;">${esc(e.name)}</strong> — ${esc(e.note || '')}</span></li>`,
-    )
+    .map((e) => `<li style="font-size:12px;color:#666;padding:4px 0;display:flex;align-items:flex-start;gap:8px;"><span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.05em;text-transform:uppercase;padding:2px 6px;border-radius:3px;background:${e.status === 'strong' ? '#e8f5ee' : e.status === 'adequate' ? '#fef3e2' : '#fde8e8'};color:${e.status === 'strong' ? '#2a9d6a' : e.status === 'adequate' ? '#d4a843' : '#d94a4a'};margin-top:1px;flex-shrink:0;">${esc(e.status || '?')}</span><span style="flex:1;"><strong style="color:#1a1a1a;">${esc(e.name)}</strong> — ${esc(e.note || '')}</span></li>`)
     .join('');
   const bgFactors = (fwk.bg?.factors || [])
-    .map(
-      (f) =>
-        `<li style="font-size:12px;color:#666;padding:4px 0;display:flex;justify-content:space-between;gap:10px;"><span><strong style="color:#1a1a1a;">${esc(f.name)}</strong>${f.weight && f.weight > 1 ? ` <span style="color:#999;font-size:10px;">×${f.weight}</span>` : ''} — ${esc(f.note || '')}</span><span style="font-weight:600;color:#1a1a1a;flex-shrink:0;">${f.score}/5</span></li>`,
-    )
+    .map((f) => `<li style="font-size:12px;color:#666;padding:4px 0;display:flex;justify-content:space-between;gap:10px;"><span><strong style="color:#1a1a1a;">${esc(f.name)}</strong>${f.weight && f.weight > 1 ? ` <span style="color:#999;font-size:10px;">×${f.weight}</span>` : ''} — ${esc(f.note || '')}</span><span style="font-weight:600;color:#1a1a1a;flex-shrink:0;">${f.score}/5</span></li>`)
     .join('');
   const saPrinciples = (fwk.sa?.principles || [])
-    .map(
-      (p) =>
-        `<li style="font-size:12px;color:#666;padding:4px 0;display:flex;align-items:flex-start;gap:8px;"><span style="display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:50%;background:${p.passed ? '#2a9d6a' : '#d94a4a'};color:#fff;font-size:10px;font-weight:700;margin-top:1px;flex-shrink:0;">${p.passed ? '✓' : '×'}</span><span style="flex:1;"><strong style="color:#1a1a1a;">${esc(p.id || '')} ${esc(p.name)}</strong>${p.note ? ' — ' + esc(p.note) : ''}</span></li>`,
-    )
+    .map((p) => `<li style="font-size:12px;color:#666;padding:4px 0;display:flex;align-items:flex-start;gap:8px;"><span style="display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:50%;background:${p.passed ? '#2a9d6a' : '#d94a4a'};color:#fff;font-size:10px;font-weight:700;margin-top:1px;flex-shrink:0;">${p.passed ? '✓' : '×'}</span><span style="flex:1;"><strong style="color:#1a1a1a;">${esc(p.id || '')} ${esc(p.name)}</strong>${p.note ? ' — ' + esc(p.note) : ''}</span></li>`)
     .join('');
 
-  return `${shellOpen({ company: r.company_name, title: 'frameworks', slug: ctx.slug, expiresAt: ctx.expiresAt, downloadUrl: ctx.downloadUrl })}
-<div class="header"><a href="${esc(ctx.homeUrl)}">basher</a></div>
-<div class="nav"><a href="index.html">${esc(r.company_name)}</a></div>
-<div class="page-title">frameworks</div>
+  const wrap = (items) => items ? `<ul style="list-style:none;margin-top:12px;border-top:1px solid #f0f0f0;padding-top:12px;">${items}</ul>` : '';
 
-<div style="max-width:760px;margin:32px auto 0;padding:0 24px;display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:16px;">
-  ${card('Bill Payne Scorecard', 'bp', bpDims ? `<ul style="list-style:none;margin-top:12px;border-top:1px solid #f0f0f0;padding-top:12px;">${bpDims}</ul>` : '')}
-  ${card('Dave Berkus Method', 'db', dbCats ? `<ul style="list-style:none;margin-top:12px;border-top:1px solid #f0f0f0;padding-top:12px;">${dbCats}</ul>` : '')}
-  ${card('Sequoia Elements', 'sq', sqEls ? `<ul style="list-style:none;margin-top:12px;border-top:1px solid #f0f0f0;padding-top:12px;">${sqEls}</ul>` : '')}
-  ${card('Christensen JTBD / Four-Box', 'cc', ccEls ? `<ul style="list-style:none;margin-top:12px;border-top:1px solid #f0f0f0;padding-top:12px;">${ccEls}</ul>` : '')}
-  ${card('Bill Gross — Five Factors (timing-weighted)', 'bg', bgFactors ? `<ul style="list-style:none;margin-top:12px;border-top:1px solid #f0f0f0;padding-top:12px;">${bgFactors}</ul>` : '')}
-  ${card('Sam Altman — 11 Principles', 'sa', saPrinciples ? `<ul style="list-style:none;margin-top:12px;border-top:1px solid #f0f0f0;padding-top:12px;">${saPrinciples}</ul>` : '')}
-</div>
+  const body = `
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;">
+  ${card('Bill Payne Scorecard', 'bp', wrap(bpDims))}
+  ${card('Dave Berkus Method', 'db', wrap(dbCats))}
+  ${card('Sequoia Elements', 'sq', wrap(sqEls))}
+  ${card('Christensen JTBD / Four-Box', 'cc', wrap(ccEls))}
+  ${card('Bill Gross — Five Factors (timing-weighted)', 'bg', wrap(bgFactors))}
+  ${card('Sam Altman — 11 Principles', 'sa', wrap(saPrinciples))}
+</div>`;
 
-${shellClose(ctx.createdAt)}`;
+  return shell('frameworks', 'frameworks', body, ctx, r);
 }
 
-function renderList(items, getResult, getColor, ctx, r, title, total) {
-  const passes = items.filter((i) => getResult(i) === 'pass' || getResult(i) === 'present').length;
+// ─────────────────────────────────────────────────────────────────────
+// list pages: pragmatic / financials / pg-thinking
+// ─────────────────────────────────────────────────────────────────────
+
+function renderListPage(items, getResult, getColor, ctx, r, currentId, label, total) {
+  const passes = items.filter((i) => {
+    const v = getResult(i);
+    return v === 'pass' || v === 'present';
+  }).length;
   const rows = items
     .map((it) => {
       const result = getResult(it);
       const c = getColor(result);
-      return `<div style="background:#fff;border:1px solid #eee;border-radius:8px;padding:18px 22px;margin-bottom:10px;">
-      <div style="display:flex;align-items:center;gap:12px;margin-bottom:6px;">
-        <span style="font-size:10px;font-weight:600;color:#ccc;letter-spacing:0.04em;min-width:24px;">${esc(it.id)}</span>
-        <span style="font-size:13px;font-weight:600;color:#1a1a1a;flex:1;">${esc(it.title)}</span>
-        <span style="font-size:10px;font-weight:700;letter-spacing:0.06em;padding:3px 10px;border-radius:3px;text-transform:uppercase;background:${c}22;color:${c};">${esc(result)}</span>
-      </div>
-      <div style="font-size:12.5px;line-height:1.6;color:#666;margin-left:36px;">${esc(it.justification || '')}</div>
-    </div>`;
+      return `<div style="background:#fff;border:1px solid #eee;border-radius:8px;padding:16px 20px;margin-bottom:8px;">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:6px;">
+          <span style="font-size:10px;font-weight:600;color:#ccc;letter-spacing:0.04em;min-width:24px;flex-shrink:0;">${esc(it.id)}</span>
+          <span style="font-size:13px;font-weight:600;color:#1a1a1a;flex:1;">${esc(it.title)}</span>
+          <span style="font-size:10px;font-weight:700;letter-spacing:0.06em;padding:3px 10px;border-radius:3px;text-transform:uppercase;background:${c}22;color:${c};flex-shrink:0;">${esc(result)}</span>
+        </div>
+        <div style="font-size:12.5px;line-height:1.6;color:#666;margin-left:36px;">${esc(it.justification || '')}</div>
+      </div>`;
     })
     .join('');
 
-  return `${shellOpen({ company: r.company_name, title, slug: ctx.slug, expiresAt: ctx.expiresAt, downloadUrl: ctx.downloadUrl })}
-<div class="header"><a href="${esc(ctx.homeUrl)}">basher</a></div>
-<div class="nav"><a href="index.html">${esc(r.company_name)}</a></div>
-<div class="page-title">${esc(title)}</div>
-<div style="text-align:center;margin-top:24px;font-size:32px;font-weight:700;color:#1a1a1a;">${passes}<span style="font-size:18px;font-weight:400;color:#999;"> / ${total}</span></div>
-
-<div style="max-width:640px;margin:32px auto 0;padding:0 24px 60px;">
-  ${rows}
-</div>
-
-${shellClose(ctx.createdAt)}`;
+  const body = `
+<div style="font-size:32px;font-weight:700;color:#1a1a1a;margin-bottom:18px;">${passes}<span style="font-size:18px;font-weight:400;color:#999;"> / ${total}</span></div>
+${rows}`;
+  return shell(currentId, label, body, ctx, r);
 }
 
-function renderPragmatic(r, ctx) {
-  return renderList(
-    r.pragmatic,
-    (it) => it.result,
-    (s) => resultColor(s),
-    ctx,
-    r,
-    'pragmatic review',
-    11,
-  );
+const renderPragmatic   = (r, ctx) => renderListPage(r.pragmatic,   (i) => i.result, resultColor, ctx, r, 'pragmatic',   'pragmatic',    11);
+const renderFinancials  = (r, ctx) => renderListPage(r.financials,  (i) => i.status, statusColor, ctx, r, 'financials',  'financials',   12);
+const renderPgThinking  = (r, ctx) => renderListPage(r.pg_thinking, (i) => i.result, resultColor, ctx, r, 'pg-thinking', 'pg thinking',  20);
+
+// ─────────────────────────────────────────────────────────────────────
+// summary (executive)
+// ─────────────────────────────────────────────────────────────────────
+
+function renderSummary(r, ctx) {
+  const body = `<p class="summary-text">${esc(r.executive_summary || '(no summary)')}</p>`;
+  return shell('summary', 'summary', body, ctx, r);
 }
 
-function renderFinancials(r, ctx) {
-  return renderList(
-    r.financials,
-    (it) => it.status,
-    (s) => statusColor(s),
-    ctx,
-    r,
-    'financials',
-    12,
-  );
+// ─────────────────────────────────────────────────────────────────────
+// missing
+// ─────────────────────────────────────────────────────────────────────
+
+function renderMissing(r, ctx) {
+  const items = r.missing_information || [];
+  const body = items.length
+    ? `<ul style="list-style:none;">${items.map((m) => `<li style="font-size:13px;line-height:1.7;color:#555;padding:10px 0;border-bottom:1px solid #f0f0f0;"><span style="font-size:10px;font-weight:600;color:#999;letter-spacing:0.04em;margin-right:8px;">${esc(m.tag)}</span>${esc(m.text)}</li>`).join('')}</ul>`
+    : `<div class="placeholder">No gaps flagged — the plan addressed every checkpoint Claude looked for.</div>`;
+  return shell('missing', 'missing', body, ctx, r);
 }
 
-function renderPgThinking(r, ctx) {
-  return renderList(
-    r.pg_thinking,
-    (it) => it.result,
-    (s) => resultColor(s),
-    ctx,
-    r,
-    'pg thinking',
-    20,
-  );
+// ─────────────────────────────────────────────────────────────────────
+// plan / pitch placeholders
+// ─────────────────────────────────────────────────────────────────────
+
+function renderPlan(r, ctx) {
+  const body = `<div class="placeholder">Once your evaluation is solid (frameworks, pragmatic, financials all clearing the bar), basher will draft a one-page working business plan here. Coming soon.</div>`;
+  return shell('plan', 'plan', body, ctx, r);
+}
+
+function renderPitch(r, ctx) {
+  const body = `<div class="placeholder">After the plan stabilizes, basher will assemble a 10-slide pitch deck draft from your evaluation. Coming soon.</div>`;
+  return shell('pitch', 'pitch', body, ctx, r);
 }
 
 export function renderAll(result, ctx) {
   return {
-    'index.html': renderIndex(result, ctx),
-    'frameworks.html': renderFrameworks(result, ctx),
-    'pragmatic.html': renderPragmatic(result, ctx),
-    'financials.html': renderFinancials(result, ctx),
+    'index.html':       renderStart(result, ctx),
+    'frameworks.html':  renderFrameworks(result, ctx),
+    'pragmatic.html':   renderPragmatic(result, ctx),
+    'financials.html':  renderFinancials(result, ctx),
     'pg-thinking.html': renderPgThinking(result, ctx),
+    'summary.html':     renderSummary(result, ctx),
+    'missing.html':     renderMissing(result, ctx),
+    'plan.html':        renderPlan(result, ctx),
+    'pitch.html':       renderPitch(result, ctx),
   };
 }
