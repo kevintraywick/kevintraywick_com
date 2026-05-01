@@ -94,8 +94,26 @@ export function FeedOverlay() {
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
     >
-      {/* Header bar — visual symmetry with bottom bar */}
-      <div className="border-b border-white/10 flex-shrink-0 flex items-center justify-center" style={{ height: '22px' }}>
+      {/* Header bar */}
+      <div className="border-b border-white/10 flex-shrink-0 flex items-center justify-center relative" style={{ height: '22px' }}>
+        <button
+          onClick={() => navigate('/blog')}
+          aria-label="Go to blog"
+          disabled={uploadState === 'loading'}
+          className="absolute cursor-pointer"
+          style={{ left: '8px', marginTop: '5px' }}
+        >
+          <span
+            className="w-5 h-5 rounded-full flex items-center justify-center text-white leading-none"
+            style={{
+              background: uploadState === 'error' ? '#f87171' : '#999',
+              fontSize: uploadState === 'loading' ? '10px' : '16px',
+              opacity: uploadState !== 'idle' ? 0.8 : anyDragOver ? 0.8 : 0.4,
+            }}
+          >
+            {uploadState === 'loading' ? '…' : uploadState === 'error' ? '✕' : '+'}
+          </span>
+        </button>
         <a href="/cc" className="w-5 h-5 rounded-full block" style={{ background: '#999', opacity: 0.4, marginTop: '5px' }} />
         <a href="/me" className="w-5 h-5 rounded-full block" style={{ background: '#5af', opacity: 0.4, marginTop: '5px', marginLeft: '8px' }} />
         <a href="https://movealong-production.up.railway.app" target="_blank" rel="noopener noreferrer" className="block" style={{ opacity: 0.4, marginLeft: '8px', fontSize: '20px', color: '#999', lineHeight: '20px', marginTop: '5px' }}>→</a>
@@ -158,24 +176,6 @@ export function FeedOverlay() {
         ))}
       </div>
 
-      {/* + button */}
-      <button
-        className="border-t border-white/10 flex items-center justify-center py-1.5 w-full cursor-pointer"
-        onClick={() => navigate('/blog')}
-        aria-label="Go to blog"
-        disabled={uploadState === 'loading'}
-      >
-        <span
-          className="w-5 h-5 rounded-full flex items-center justify-center text-white leading-none"
-          style={{
-            background: uploadState === 'error' ? '#f87171' : '#999',
-            fontSize: uploadState === 'loading' ? '10px' : '16px',
-            opacity: uploadState !== 'idle' ? 0.8 : anyDragOver ? 0.8 : 0.4,
-          }}
-        >
-          {uploadState === 'loading' ? '…' : uploadState === 'error' ? '✕' : '+'}
-        </span>
-      </button>
     </div>
   )
 }
