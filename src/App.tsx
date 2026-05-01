@@ -26,17 +26,17 @@ function Homepage() {
       <a href="sms:+12068608292" className="overflow-hidden" {...hover('Text me here')}>
         <img src={bubbleImg} alt="Text Me" className="w-full h-full object-cover" />
       </a>
-      {/* Blackmoor — position 3 (r1c3) */}
-      <a href="https://blackmoor-production.up.railway.app" target="_blank" rel="noopener noreferrer" className="overflow-hidden" {...hover('Shadow of the Wolf')}>
-        <img src={andImg} alt="Blackmoor" className="w-full h-full object-cover" />
-      </a>
-
-      {/* Coming soon — position 4 (r2c1) */}
+      {/* Coming soon — position 3 (r1c3) */}
       <div className="flex items-center justify-center bg-white">
         <span style={{ ...kFont, fontSize: 'clamp(28px, 5vw, 72px)', lineHeight: 1.1 }}>
           coming soon
         </span>
       </div>
+
+      {/* Blackmoor — position 4 (r2c1) */}
+      <a href="https://blackmoor-production.up.railway.app" target="_blank" rel="noopener noreferrer" className="overflow-hidden" {...hover('Shadow of the Wolf')}>
+        <img src={andImg} alt="Blackmoor" className="w-full h-full object-cover" />
+      </a>
       {/* K — position 5 (center) */}
       <div className="relative flex items-center justify-center">
         <span style={{ ...kFont, fontSize: 'clamp(120px, 18vw, 280px)', lineHeight: 1, opacity: hoverText ? 0 : 1, transition: 'opacity 0.3s' }}>
