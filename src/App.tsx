@@ -47,7 +47,7 @@ function Homepage() {
 
       {/* Blackmoor — position 4 (r2c1) */}
       <div className="relative overflow-hidden">
-        <a href="https://blackmoor-production.up.railway.app" target="_blank" rel="noopener noreferrer" className="block w-full h-full" {...hover('Shadow of the Wolf')}>
+        <a href="https://blackmoor.up.railway.app" target="_blank" rel="noopener noreferrer" className="block w-full h-full" {...hover('Shadow of the Wolf')}>
           <img src={andImg} alt="Blackmoor" className="w-full h-full object-cover" />
         </a>
         <CornerDot slug="blackmoor" />

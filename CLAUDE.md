@@ -34,7 +34,7 @@ npx vitest run src/components/FeedOverlay.test.tsx
 **External links from homepage**:
 - FeedOverlay header arrow (→) links to MoveAlong app at `https://movealong-production.up.railway.app`
 - FeedOverlay header circle links to `/cc`
-- Blackmoor panel links to `https://blackmoor-production.up.railway.app`
+- Blackmoor panel links to `https://blackmoor.up.railway.app`
 - Wind panel links to `https://meticulous-eagerness-production-411f.up.railway.app`
 
 `index.html` includes a GitHub Pages SPA redirect shim: query param `?path=` is rewritten to the real path via `window.history.replaceState`.
