@@ -14,7 +14,7 @@ const kFont = { fontFamily: '"Barlow Condensed", sans-serif', fontWeight: 900 } 
 
 const CornerDot = ({ slug }: { slug: string }) => (
   <a
-    href={`/collect/?box=${slug}`}
+    href={`/${slug}`}
     aria-label={`Collect items for ${slug}`}
     title={`Collect: ${slug}`}
     className="absolute bottom-2 right-2 w-5 h-5 rounded-full block z-10"
@@ -42,7 +42,7 @@ function Homepage() {
         <span style={{ ...kFont, fontSize: 'clamp(28px, 5vw, 72px)', lineHeight: 1.1 }}>
           coming soon
         </span>
-        <CornerDot slug="r1c3" />
+        <CornerDot slug="cs1" />
       </div>
 
       {/* Blackmoor — position 4 (r2c1) */}
@@ -62,7 +62,7 @@ function Homepage() {
             {hoverText}
           </span>
         )}
-        <CornerDot slug="22" />
+        <CornerDot slug="k" />
       </div>
       {/* JustEdit — position 6 (r2c3) */}
       <div className="relative overflow-hidden">
@@ -77,21 +77,21 @@ function Homepage() {
         <span style={{ ...kFont, fontSize: 'clamp(28px, 5vw, 72px)', lineHeight: 1.1 }}>
           coming soon
         </span>
-        <CornerDot slug="r3c1" />
+        <CornerDot slug="cs2" />
       </div>
       {/* Fast French — position 8 (r3c2) */}
       <div className="relative overflow-hidden">
         <a href="/fast-french/" target="_blank" rel="noopener noreferrer" className="block w-full h-full" {...hover('Fast French,\nmy French learning game')}>
           <img src={pastryImg} alt="Fast French" className="w-full h-full object-cover" />
         </a>
-        <CornerDot slug="fast-french" />
+        <CornerDot slug="ff" />
       </div>
       {/* Wind — position 9 (r3c3) */}
       <div className="relative overflow-hidden">
         <a href="https://meticulous-eagerness-production-411f.up.railway.app" target="_blank" rel="noopener noreferrer" className="block w-full h-full" {...hover('Windy,\nmy real time wind project')}>
           <img src={windImg} alt="Wind" className="w-full h-full object-cover" />
         </a>
-        <CornerDot slug="wind" />
+        <CornerDot slug="windy" />
       </div>
     </div>
   )
