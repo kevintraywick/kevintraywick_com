@@ -17,7 +17,7 @@ const CornerDot = ({ slug }: { slug: string }) => (
     href={`/collect/?box=${slug}`}
     aria-label={`Collect items for ${slug}`}
     title={`Collect: ${slug}`}
-    className="absolute bottom-2 left-2 w-5 h-5 rounded-full block z-10"
+    className="absolute bottom-2 right-2 w-5 h-5 rounded-full block z-10"
     style={{ background: '#999', opacity: 0.4 }}
     onClick={e => e.stopPropagation()}
   />
@@ -62,7 +62,7 @@ function Homepage() {
             {hoverText}
           </span>
         )}
-        <CornerDot slug="k" />
+        <CornerDot slug="22" />
       </div>
       {/* JustEdit — position 6 (r2c3) */}
       <div className="relative overflow-hidden">

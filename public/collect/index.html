@@ -246,6 +246,38 @@
     const slug = rawSlug.replace(/[^a-z0-9-]/g, '').slice(0, 64) || 'general'
     const STORAGE_KEY = 'collect_' + slug
 
+    // --- Upload API (kt-feed-api on Railway) ---
+    const API_URL = 'https://kt-feed-api-production.up.railway.app'
+    const SECRET_KEY = 'collect_post_secret'
+
+    function getSecret() {
+      let s = localStorage.getItem(SECRET_KEY)
+      if (!s) {
+        s = prompt('Enter upload password (stored locally on this device):')
+        if (s) localStorage.setItem(SECRET_KEY, s)
+      }
+      return s
+    }
+
+    async function uploadImage(file) {
+      const secret = getSecret()
+      if (!secret) throw new Error('No upload password')
+      const body = new FormData()
+      body.append('image', file)
+      const res = await fetch(`${API_URL}/uploads`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${secret}` },
+        body,
+      })
+      if (res.status === 401) {
+        localStorage.removeItem(SECRET_KEY)
+        throw new Error('Wrong password — try again')
+      }
+      if (!res.ok) throw new Error(`Upload failed (${res.status})`)
+      const data = await res.json()
+      return data.url
+    }
+
     document.title = 'Collect: ' + slug
     document.getElementById('boxname').textContent = slug
 
@@ -260,7 +292,13 @@
 
     // --- Persistence ---
     function saveState() {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify({ files, index }))
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify({ files, index }))
+      } catch (err) {
+        // localStorage quota is ~5–10 MB; large JPGs as base64 data URLs blow it easily.
+        showToast('Storage full — file kept in this session only')
+        console.warn('saveState failed:', err)
+      }
     }
 
     function loadState() {
@@ -438,12 +476,27 @@
     }
 
     function handleFiles(fileList) {
-      Array.from(fileList).forEach(file => {
+      Array.from(fileList).forEach(async file => {
         const ext = file.name.split('.').pop().toLowerCase()
         let type = 'html'
         if (['png','jpg','jpeg','gif','webp','svg','bmp'].includes(ext)) type = 'image'
         else if (ext === 'pdf') type = 'pdf'
         else if (ext === 'url') type = 'url'
+
+        // Images go to the API (no localStorage quota); other types stay inline as data URLs.
+        if (type === 'image') {
+          try {
+            const url = await uploadImage(file)
+            files.push({ name: file.name, type: 'image', url })
+            index = files.length - 1
+            saveState()
+            render()
+          } catch (err) {
+            showToast(err.message || 'Upload failed')
+            console.warn('uploadImage failed:', err)
+          }
+          return
+        }
 
         const reader = new FileReader()
         reader.onload = () => {
@@ -508,7 +561,7 @@
       const viewer = document.getElementById('viewer')
 
       if (f.type === 'image') {
-        const src = f.dataUrl || encodeURIComponent(f.name)
+        const src = f.url || f.dataUrl || encodeURIComponent(f.name)
         viewer.innerHTML = `<img src="${src}" alt="${f.name}" />`
       } else if (f.type === 'url') {
         viewer.innerHTML = `<iframe src="${f.url}" sandbox="allow-scripts allow-same-origin allow-popups allow-forms" referrerpolicy="no-referrer"></iframe>`
