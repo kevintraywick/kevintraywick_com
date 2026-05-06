@@ -248,31 +248,11 @@
 
     // --- Upload API (kt-feed-api on Railway) ---
     const API_URL = 'https://kt-feed-api-production.up.railway.app'
-    const SECRET_KEY = 'collect_post_secret'
-
-    function getSecret() {
-      let s = localStorage.getItem(SECRET_KEY)
-      if (!s) {
-        s = prompt('Enter upload password (stored locally on this device):')
-        if (s) localStorage.setItem(SECRET_KEY, s)
-      }
-      return s
-    }
 
     async function uploadImage(file) {
-      const secret = getSecret()
-      if (!secret) throw new Error('No upload password')
       const body = new FormData()
       body.append('image', file)
-      const res = await fetch(`${API_URL}/uploads`, {
-        method: 'POST',
-        headers: { 'Authorization': `Bearer ${secret}` },
-        body,
-      })
-      if (res.status === 401) {
-        localStorage.removeItem(SECRET_KEY)
-        throw new Error('Wrong password — try again')
-      }
+      const res = await fetch(`${API_URL}/uploads`, { method: 'POST', body })
       if (!res.ok) throw new Error(`Upload failed (${res.status})`)
       const data = await res.json()
       return data.url
